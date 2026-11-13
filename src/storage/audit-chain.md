@@ -22,6 +22,8 @@ A valid chain can still be an older valid prefix. Detecting truncation or rollba
 
 ## Coverage and failure
 
+Host effects have a separate ordered audit lane. For classes selected by `audit.host_fail_closed`, the host waits for a durable write-ahead admission record before executing the effect; admission failure refuses the operation. Supported classes are `file_read`, `file_write`, `file_delete`, `net_connect`, `net_bind`, and `process_spawn`. The default selection is empty. Other recording uses asynchronous queues with retry and loss/gap accounting. A durable admission record proves admission, not eventual completion of the effect.
+
 Management audit attempts durable append and live publication. Persistence failure logs a warning and permits the management request to continue. The live event is best-effort. IPC tracing is another evidence surface and is not automatically part of the signed chain.
 
 These choices mean a successful management action can lack its intended durable entry. A consumer requiring complete evidence must account for this behavior explicitly. Do not infer universal fail-closed behavior from cryptographic chain integrity.
@@ -42,3 +44,6 @@ This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e
 - [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/kernel_router/mod.rs)
 - [crates/astrid-crypto/src/key_storage.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-crypto/src/key_storage.rs)
 - [crates/astrid-storage/src/engine/durable/compaction/proof.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/engine/durable/compaction/proof.rs)
+
+- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_sink/mod.rs)
+- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-config/src/audit.rs)

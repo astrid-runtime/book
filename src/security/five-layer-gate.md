@@ -32,6 +32,8 @@ Package provenance is another boundary: a signature establishes who signed bytes
 
 ## Evidence and failure behavior
 
+Host effects have a separate ordered audit lane. For classes selected by `audit.host_fail_closed`, the host waits for a durable write-ahead admission record before executing the effect; admission failure refuses the operation. Supported classes are `file_read`, `file_write`, `file_delete`, `net_connect`, `net_bind`, and `process_spawn`. The default selection is empty. Other recording uses asynchronous queues with retry and loss/gap accounting. A durable admission record proves admission, not eventual completion of the effect.
+
 Audit append and audit coverage are different properties. Signed entries can authenticate the history that was recorded. Management audit persistence uses continue-and-alert behavior on failure, so a successful management effect need not have a durable audit entry. IPC tracing is telemetry, not automatically a signed entry. Audit key/registry configuration errors during boot can instead prevent startup.
 
 Do not describe Astrid as universally fail-closed on audit failure or universally gated by monetary budgets. State the operation, enforcement point, and failure behavior. See [Policy, Budget, Approval, and Audit](policy-budget-approval-audit.md) and [The Cryptographic Audit Chain](../storage/audit-chain.md).
@@ -47,3 +49,6 @@ This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e
 - [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/kernel_router/mod.rs)
 - [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_keys.rs)
 - [crates/astrid-capsule-install/src/authority.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule-install/src/authority.rs)
+
+- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_sink/mod.rs)
+- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-config/src/audit.rs)

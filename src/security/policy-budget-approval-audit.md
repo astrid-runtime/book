@@ -24,6 +24,8 @@ The approval budget implementation provides atomic reservation primitives. Its g
 
 ## Audit semantics
 
+Host effects have a separate ordered audit lane. For classes selected by `audit.host_fail_closed`, the host waits for a durable write-ahead admission record before executing the effect; admission failure refuses the operation. Supported classes are `file_read`, `file_write`, `file_delete`, `net_connect`, `net_bind`, and `process_spawn`. The default selection is empty. Other recording uses asynchronous queues with retry and loss/gap accounting. A durable admission record proves admission, not eventual completion of the effect.
+
 The kernel management audit helper attempts durable append and emits a live event. If append fails, it logs a security warning and continues. Event publication is also best-effort. Consumers must distinguish live notifications from persisted signed evidence.
 
 The IPC audit helper emits tracing events. Tracing is useful for operations and diagnosis, but it does not automatically create a signed chain entry. Conversely, malformed audit key or registry state at startup can prevent opening the audit log. Failure behavior is therefore specific to the path and stage.
@@ -43,3 +45,6 @@ This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e
 - [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/kernel_router/mod.rs)
 - [crates/astrid-capsule/src/engine/wasm/host/ipc.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule/src/engine/wasm/host/ipc.rs)
 - [crates/astrid-storage/src/kv/principal.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/kv/principal.rs)
+
+- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_sink/mod.rs)
+- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-config/src/audit.rs)
