@@ -111,7 +111,7 @@ The subprocess can do real work in your project and reach the network, and it ca
 
 ## See also
 
-- [The Five-Layer Security Gate](five-layer-gate.md)
+- [Security Enforcement Boundaries](five-layer-gate.md)
 - [Packages: IPC, Net, HTTP, Sys, Process](../host-abi/packages-ipc-net-http-sys-process.md)
 - [The VFS Copy-on-Write Overlay](../storage/vfs-overlay.md)
 - [Capability Gating](../host-abi/capability-gating.md)

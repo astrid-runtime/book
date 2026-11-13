@@ -120,7 +120,7 @@ The `File` struct wraps the `file-handle` resource, but calling `File::open` cur
 The host VFS is implemented in `core/crates/astrid-vfs/`. Four types are in play:
 
 - `HostVfs` (`src/host.rs`): `cap-std`-backed implementation. Uses a `Semaphore::new(64)` to bound concurrent open file descriptors. The `read` method has its own 50 MB ceiling (`host.rs:298-313`), which is higher than the 10 MB WIT contract limit; the host-function layer enforces the tighter bound. A git-managed workspace gets a direct `HostVfs`, no copy-on-write.
-- `workspace_cow` (`src/workspace_cow/`): OS-level copy-on-write for non-git workspaces (APFS `clonefile`, Linux `overlayfs`/`fuse-overlayfs`, fail-closed `NoCow`). The merged directory is shared by the fs host and spawned processes; promote/rollback are audited kernel admin requests. See [Workspace Copy-on-Write](../storage/vfs-overlay.md).
+- `workspace_cow` (`src/workspace_cow/`): OS-level copy-on-write for non-git workspaces (APFS `clonefile`, Linux `overlayfs`/`fuse-overlayfs`, direct-write `NoCow` (without rollback)). The merged directory is shared by the fs host and spawned processes; promote/rollback are audited kernel admin requests. See [Workspace Copy-on-Write](../storage/vfs-overlay.md).
 - `OverlayVfs` (`src/overlay.rs`): In-process copy-on-write layer, no longer in the workspace write path. Reads fall through to the lower layer; writes go to the upper (tempdir) layer. Its `commit`/`rollback` exist and are tested but have no production call site; the workspace durable-write gate is `workspace_cow` promote/rollback.
 - `OverlayVfsRegistry` (`src/overlay_registry.rs`): Per-principal registry. Default cap: 1024 principals (configurable via `ASTRID_OVERLAY_REGISTRY_MAX_PRINCIPALS`). LRU eviction with a 10-minute idle window. The upper-layer `TempDir` is owned by the `OverlayVfs` so eviction cannot delete it while an in-flight invocation holds an `Arc` clone.
 
@@ -180,16 +180,13 @@ pub fn cas(key: &str, expected: Option<&[u8]>, new: &[u8]) -> Result<bool, SysEr
 }
 ```
 
-`expected = None` is the create-if-absent (insert-lock) form. `MemoryKvStore` serializes the compare-and-write under a single write lock; `SurrealKvStore` serializes all compare_and_swap calls under a global `tokio::sync::Mutex` (the `cas_lock` field in `surreal.rs`) because SurrealKV's MVCC conflict detection alone is insufficient to guarantee atomicity. Commit conflicts from background flush activity are additionally treated as mismatches as a secondary defense (`surreal.rs:246-250`).
+`expected = None` is the create-if-absent form. Native runtime KV projects mutations onto owner roots and compares the expected state before publication. Treat a value mismatch as a conditional-update failure and a storage error as an error; do not fall back to an unconditional write.
 
 ### Host storage backend
 
-The host routes KV calls through `ScopedKvStore` -> `KvStore` trait in `core/crates/astrid-storage/`. Two backends exist:
+The host routes scoped KV operations through the native durable principal store. `TreeKvStore` uses immutable B+-tree checkpoints and compact transitions, with owner-root compare-and-swap and quota checks. Namespace ownership is supplied at the authority-aware integration boundary.
 
-- `MemoryKvStore` (`kv/memory.rs`): in-memory `HashMap`, used in tests and ephemeral deployments.
-- `SurrealKvStore` (`kv/surreal.rs`, behind the `kv` feature): `SurrealKV` embedded LSM-tree, ACID-compliant. Production backend.
-
-The composite key format is `"{namespace}\0{key}"` where `\0` is the separator byte and `\x01` closes the namespace range for scans (`kv/mod.rs:85-116`).
+`MemoryKvStore` supports tests. `SurrealKvStore` remains for explicit legacy callers, migration and differential checks. It is not the native runtime backend. See [KV Storage](../storage/kv.md) for batch bounds, durability and secret-storage behavior.
 
 ### SDK surface
 
