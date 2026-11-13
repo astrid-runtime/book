@@ -35,7 +35,7 @@
 
 # Part V: Security
 
-- [The Five-Layer Security Gate](./security/five-layer-gate.md)
+- [Security Enforcement Boundaries](./security/five-layer-gate.md)
 - [Capabilities, Tokens, and Delegation](./security/capabilities-and-tokens.md)
 - [Policy, Budget, Approval, and Audit](./security/policy-budget-approval-audit.md)
 - [The OS Process Sandbox](./security/os-process-sandbox.md)

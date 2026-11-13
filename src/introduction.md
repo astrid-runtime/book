@@ -26,11 +26,9 @@ hosted lifecycle, volume, and platform contract. The getting-started chapters
 have been aligned with that release.
 
 The deeper chapters explain the capsule model, host ABI, event bus, storage,
-identity, and security. Some retain older implementation snapshots and source
-line anchors. They are useful design references, but an old directory layout
-or code excerpt is not an instruction to recreate that layout in a current
-installation. Where this matters, a compatibility note points back to the
-current operating guide.
+identity, and security. The security and storage chapters cite the runtime
+revision they describe. Match those references to the runtime bundled by your
+product distribution when evaluating a deployed system.
 
 ## How to read it
 

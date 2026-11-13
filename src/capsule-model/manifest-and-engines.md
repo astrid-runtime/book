@@ -234,7 +234,7 @@ if !manifest.components.is_empty() {
 }
 ```
 
-`WasmEngine` runs the WASM binary through the Wasmtime Component Model. It wires all `astrid:*` WIT host interfaces (fs, http, ipc, kv, net, identity, approval, elicitation, process, sys) through the `ManifestSecurityGate` before every call, so the sandbox is fail-closed: any syscall not declared in the manifest is denied without reaching the kernel event bus.
+`WasmEngine` runs the WASM binary through the Wasmtime Component Model. It provides `astrid:*` WIT host interfaces with operation-specific enforcement. Filesystem, process and network effects use manifest resource checks; IPC has topic permissions and invocation-authority checks; state access uses scoped owner resolution. See [Security Enforcement Boundaries](../security/five-layer-gate.md).
 
 For non-run-loop capsules the engine maintains a pool of `(Store, Instance)` pairs (default size 16, or 1 for `host_process` capsules that hold live cross-invocation resources). This allows concurrent interceptor calls from different principals without serializing through a single store. Capsules with a `run()` WASM export get a single dedicated store owned by a background task.
 
