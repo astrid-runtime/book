@@ -10,6 +10,8 @@ The append path invalidates cached predecessor state before awaiting durable sto
 
 ## Keys and formats
 
+Native boot loads audit policy once from the captured runtime home and selected workspace after state admission. It uses that snapshot for entry format, retention, and host-call admission. Invalid merged configuration prevents startup; neither default settings nor a workspace-free fallback replace the selected policy. An existing v2 key registry does not bypass that configuration requirement.
+
 The runtime persists its signing material; it does not generate an unrelated ephemeral audit identity on every normal restart. The v1 path uses the runtime key. The v2 path separates `audit.key` from `runtime.key`, and a registry binds key roles and supports cross-signed rotation.
 
 Once a v2 registry exists, opening retains v2 behavior even if configuration asks for v1. Invalid registry state, a missing required key, or mismatched key identity can prevent startup. Key custody in the inspected filesystem implementation uses owner-only Unix files and durable publication; this is not a hardware-backed custody claim.
@@ -36,14 +38,18 @@ For research, keep three claims separate: record authenticity, chain consistency
 
 ## Implementation references
 
-This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e93`; a product distribution may pin a different runtime revision.
+This chapter describes runtime source at `ac0e876515764ad85c9b647277faa47e96afb583`; a product distribution may pin a different runtime revision.
 
-- [crates/astrid-audit/src/log.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-audit/src/log.rs)
-- [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_keys.rs)
-- [crates/astrid-kernel/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/lib.rs)
-- [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/kernel_router/mod.rs)
-- [crates/astrid-crypto/src/key_storage.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-crypto/src/key_storage.rs)
-- [crates/astrid-storage/src/engine/durable/compaction/proof.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/engine/durable/compaction/proof.rs)
+- [crates/astrid-audit/src/log.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-audit/src/log.rs)
+- [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_keys.rs)
+- [crates/astrid-kernel/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs)
+- [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/kernel_router/mod.rs)
+- [crates/astrid-crypto/src/key_storage.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-crypto/src/key_storage.rs)
+- [crates/astrid-storage/src/engine/durable/compaction/proof.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/engine/durable/compaction/proof.rs)
 
-- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_sink/mod.rs)
-- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-config/src/audit.rs)
+- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_sink/mod.rs)
+- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-config/src/audit.rs)
+
+- [Captured-home audit policy loader](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_retention.rs#L18-L44)
+- [One policy snapshot for native boot](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs#L1273-L1291)
+- [Retention and host-admission policy application](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs#L1368-L1372)

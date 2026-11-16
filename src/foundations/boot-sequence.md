@@ -12,6 +12,8 @@ An open or recovery error prevents successful construction. Recoverable tail con
 
 The runtime loads or creates its persisted runtime key. The audit projection is opened from system-control state, then audit format and key-registry rules are applied. The v2 path has a separate audit key; an existing registry prevents silent reversion to v1 or arbitrary replacement of a missing registered key.
 
+After migration and runtime-tree admission, native boot loads the complete audit policy once from the already captured `AstridHome` and selected workspace. Entry format, retention, and host-call admission use that same snapshot. Invalid or unreadable merged configuration stops startup; the kernel does not substitute defaults or discard the workspace layer. Valid workspace host-admission settings can tighten the operator policy and remain part of the snapshot.
+
 Invalid registry or key state can fail startup. This differs from management audit append failures after startup, which use continue-and-alert behavior. See [The Cryptographic Audit Chain](../storage/audit-chain.md).
 
 ## Establish connection credentials
@@ -40,11 +42,15 @@ For the release-specific user commands and platform contract, see [Operating the
 
 ## Implementation references
 
-This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e93`; a product distribution may pin a different runtime revision.
+This chapter describes runtime source at `ac0e876515764ad85c9b647277faa47e96afb583`; a product distribution may pin a different runtime revision.
 
-- [crates/astrid-kernel/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/lib.rs)
-- [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_keys.rs)
-- [crates/astrid-storage/src/principal_state/store_open.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/principal_state/store_open.rs)
-- [crates/astrid-storage/src/volume/hosted/open.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/volume/hosted/open.rs)
-- [crates/astrid-kernel/src/capsule_restart.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/capsule_restart.rs)
-- [crates/astrid-kernel/src/capsule_removal.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/capsule_removal.rs)
+- [crates/astrid-kernel/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs)
+- [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_keys.rs)
+- [crates/astrid-storage/src/principal_state/store_open.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/principal_state/store_open.rs)
+- [crates/astrid-storage/src/volume/hosted/open.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/volume/hosted/open.rs)
+- [crates/astrid-kernel/src/capsule_restart.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/capsule_restart.rs)
+- [crates/astrid-kernel/src/capsule_removal.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/capsule_removal.rs)
+
+- [Captured-home audit policy loader](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_retention.rs#L18-L44)
+- [One policy snapshot for native boot](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs#L1273-L1291)
+- [Retention and host-admission policy application](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs#L1368-L1372)

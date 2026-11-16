@@ -32,6 +32,8 @@ Package provenance is another boundary: a signature establishes who signed bytes
 
 ## Evidence and failure behavior
 
+Before serving, native boot loads one audit-policy snapshot from the captured runtime home and workspace. It applies that snapshot to entry format, retention, and host admission. Invalid merged configuration stops startup, and valid workspace tightening is retained. The kernel does not retry with defaults or remove the workspace layer.
+
 Host effects have a separate ordered audit lane. For classes selected by `audit.host_fail_closed`, the host waits for a durable write-ahead admission record before executing the effect; admission failure refuses the operation. Supported classes are `file_read`, `file_write`, `file_delete`, `net_connect`, `net_bind`, and `process_spawn`. The default selection is empty. Other recording uses asynchronous queues with retry and loss/gap accounting. A durable admission record proves admission, not eventual completion of the effect.
 
 Audit append and audit coverage are different properties. Signed entries can authenticate the history that was recorded. Management audit persistence uses continue-and-alert behavior on failure, so a successful management effect need not have a durable audit entry. IPC tracing is telemetry, not automatically a signed entry. Audit key/registry configuration errors during boot can instead prevent startup.
@@ -40,15 +42,19 @@ Do not describe Astrid as universally fail-closed on audit failure or universall
 
 ## Implementation references
 
-This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e93`; a product distribution may pin a different runtime revision.
+This chapter describes runtime source at `ac0e876515764ad85c9b647277faa47e96afb583`; a product distribution may pin a different runtime revision.
 
-- [crates/astrid-integration-tests/tests/canonical_security_model.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-integration-tests/tests/canonical_security_model.rs)
-- [crates/astrid-capsule/src/engine/wasm/host/ipc.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule/src/engine/wasm/host/ipc.rs)
-- [crates/astrid-capsule/src/engine/wasm/host/net/handshake.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule/src/engine/wasm/host/net/handshake.rs)
-- [crates/astrid-capsule/src/security/manifest_gate.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule/src/security/manifest_gate.rs)
-- [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/kernel_router/mod.rs)
-- [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_keys.rs)
-- [crates/astrid-capsule-install/src/authority.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule-install/src/authority.rs)
+- [crates/astrid-integration-tests/tests/canonical_security_model.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-integration-tests/tests/canonical_security_model.rs)
+- [crates/astrid-capsule/src/engine/wasm/host/ipc.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-capsule/src/engine/wasm/host/ipc.rs)
+- [crates/astrid-capsule/src/engine/wasm/host/net/handshake.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-capsule/src/engine/wasm/host/net/handshake.rs)
+- [crates/astrid-capsule/src/security/manifest_gate.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-capsule/src/security/manifest_gate.rs)
+- [crates/astrid-kernel/src/kernel_router/mod.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/kernel_router/mod.rs)
+- [crates/astrid-kernel/src/audit_keys.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_keys.rs)
+- [crates/astrid-capsule-install/src/authority.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-capsule-install/src/authority.rs)
 
-- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/audit_sink/mod.rs)
-- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-config/src/audit.rs)
+- [Host audit admission and recording](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_sink/mod.rs)
+- [Audit configuration and defaults](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-config/src/audit.rs)
+
+- [Captured-home audit policy loader](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/audit_retention.rs#L18-L44)
+- [One policy snapshot for native boot](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs#L1273-L1291)
+- [Retention and host-admission policy application](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs#L1368-L1372)

@@ -34,10 +34,10 @@ See [KV Storage](kv.md) for shared roots, quota and commit behavior, and [Securi
 
 ## Implementation references
 
-This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e93`; a product distribution may pin a different runtime revision.
+This chapter describes runtime source at `ac0e876515764ad85c9b647277faa47e96afb583`; a product distribution may pin a different runtime revision.
 
-- [crates/astrid-storage/src/content/store/workspace/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/content/store/workspace/mod.rs)
-- [crates/astrid-storage/src/content/store/workspace/model.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/content/store/workspace/model.rs)
-- [crates/astrid-storage/src/content_dag/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/content_dag/mod.rs)
-- [crates/astrid-capsule/src/engine/wasm/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-capsule/src/engine/wasm/mod.rs)
-- [crates/astrid-kernel/src/capsule_removal.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/capsule_removal.rs)
+- [crates/astrid-storage/src/content/store/workspace/mod.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/content/store/workspace/mod.rs)
+- [crates/astrid-storage/src/content/store/workspace/model.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/content/store/workspace/model.rs)
+- [crates/astrid-storage/src/content_dag/mod.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/content_dag/mod.rs)
+- [crates/astrid-capsule/src/engine/wasm/mod.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-capsule/src/engine/wasm/mod.rs)
+- [crates/astrid-kernel/src/capsule_removal.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/capsule_removal.rs)

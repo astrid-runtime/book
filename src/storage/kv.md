@@ -50,14 +50,14 @@ Memory stores and compatibility adapters remain useful for tests and explicit le
 
 ## Implementation references
 
-This chapter describes runtime source at `f519aaa28b305491bb766e083ccd5b8b0aff5e93`; a product distribution may pin a different runtime revision.
+This chapter describes runtime source at `ac0e876515764ad85c9b647277faa47e96afb583`; a product distribution may pin a different runtime revision.
 
-- [crates/astrid-kernel/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-kernel/src/lib.rs)
-- [crates/astrid-storage/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/lib.rs)
-- [crates/astrid-storage/src/principal_state/store_open.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/principal_state/store_open.rs)
-- [crates/astrid-storage/src/kv/principal.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/kv/principal.rs)
-- [crates/astrid-storage/src/kv/tree.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/kv/tree.rs)
-- [crates/astrid-storage/src/kv/tree/adapter.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/kv/tree/adapter.rs)
-- [crates/astrid-storage/src/kv/batch.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/kv/batch.rs)
-- [crates/astrid-storage/src/engine/durable/group/mod.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/engine/durable/group/mod.rs)
-- [crates/astrid-storage/src/secret.rs](https://github.com/astrid-runtime/astrid/blob/f519aaa28b305491bb766e083ccd5b8b0aff5e93/crates/astrid-storage/src/secret.rs)
+- [crates/astrid-kernel/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-kernel/src/lib.rs)
+- [crates/astrid-storage/src/lib.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/lib.rs)
+- [crates/astrid-storage/src/principal_state/store_open.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/principal_state/store_open.rs)
+- [crates/astrid-storage/src/kv/principal.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/kv/principal.rs)
+- [crates/astrid-storage/src/kv/tree.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/kv/tree.rs)
+- [crates/astrid-storage/src/kv/tree/adapter.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/kv/tree/adapter.rs)
+- [crates/astrid-storage/src/kv/batch.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/kv/batch.rs)
+- [crates/astrid-storage/src/engine/durable/group/mod.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/engine/durable/group/mod.rs)
+- [crates/astrid-storage/src/secret.rs](https://github.com/astrid-runtime/astrid/blob/ac0e876515764ad85c9b647277faa47e96afb583/crates/astrid-storage/src/secret.rs)
