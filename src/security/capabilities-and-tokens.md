@@ -35,7 +35,7 @@ pub struct CapabilityToken {
 
 Fields are not independent policy suggestions. Every field except `signature` is part of the signed payload. Tampering with any field after minting causes `verify_signature` to return `CapabilityError::InvalidSignature`. The store tests at `store_tests.rs:379` confirm this: a token whose `permissions` field is modified on disk is rejected at `get()` time.
 
-`approval_audit_id` links the token to the approval audit entry that authorized its creation. No token is minted without a corresponding approval event. This makes the audit chain the ground truth for "who approved what and when."
+`approval_audit_id` links the token to the approval audit entry that authorized its creation. The field binds an audit identifier into the token; the token constructor alone does not prove that the referenced event was durably recorded. Audit coverage depends on the issuing path.
 
 `user_id` is the first eight bytes of the approving user's ed25519 public key, stored as a short key fingerprint for log correlation without exposing the full key.
 
@@ -102,7 +102,7 @@ pub enum TokenScope {
 
 `Session` tokens live in the in-memory `HashMap` keyed by `PrincipalId`. They vanish when the daemon restarts or when `clear_session` (or `clear_session_for`) is called.
 
-`Persistent` tokens are serialized to JSON and stored in the SurrealKV backing store under the key `caps:tokens/{principal}/{token_id}`. A secondary index at `caps:token_index/{token_id}` maps token IDs to principals for O(1) lookup by ID without a full-namespace scan.
+`Persistent` tokens are serialized to JSON and stored in the injected KV backing store under the key `caps:tokens/{principal}/{token_id}`. A secondary index at `caps:token_index/{token_id}` maps token IDs to principals for O(1) lookup by ID without a full-namespace scan.
 
 The persistent layout was redesigned in Layer 4; the pre-Layer-4 flat `caps:tokens/{token_id}` key is no longer read. The store's `read_persistent_token_any_principal` method (`store.rs:312`) resolves a token through the secondary index only.
 
@@ -201,8 +201,8 @@ Construction:
 
 ```rust
 let store = CapabilityStore::in_memory();   // no KV backing
-let store = CapabilityStore::with_persistence(path)?;  // SurrealKV at path
-let store = CapabilityStore::with_kv_store(Arc::clone(&kv))?;  // shared KvStore
+let store = CapabilityStore::with_persistence(path).await?;  // explicit legacy standalone store
+let store = CapabilityStore::with_kv_store(Arc::clone(&kv)).await?;  // native composition
 ```
 
 On construction with persistence, `load_revoked` and `load_used_tokens` replay the `caps:revoked` and `caps:used` KV namespaces into the in-memory sets so the store is immediately consistent with prior sessions.
@@ -509,6 +509,6 @@ These invariants are enforced in code, not convention:
 
 ## See also
 
-- [The Five-Layer Security Gate](five-layer-gate.md)
+- [Security Enforcement Boundaries](five-layer-gate.md)
 - [Capability Gating](../host-abi/capability-gating.md)
 - [Profiles, Groups, and Quotas](../identity/profiles-groups-quotas.md)

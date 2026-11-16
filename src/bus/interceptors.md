@@ -232,4 +232,4 @@ All interceptor dispatch is fire-and-forget from the `EventDispatcher::run` loop
 
 - [Topics and Wildcards](topics-and-wildcards.md)
 - [Tools as an IPC Convention](tools-as-ipc.md)
-- [The Five-Layer Security Gate](../security/five-layer-gate.md)
+- [Security Enforcement Boundaries](../security/five-layer-gate.md)

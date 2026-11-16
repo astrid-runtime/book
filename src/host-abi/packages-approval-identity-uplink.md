@@ -474,5 +474,5 @@ All four packages are frozen at `@1.0.0` per the ABI evolution discipline. New f
 ## See also
 
 - [The Syscall Surface](the-syscall-surface.md)
-- [The Five-Layer Security Gate](../security/five-layer-gate.md)
+- [Security Enforcement Boundaries](../security/five-layer-gate.md)
 - [PrincipalId and Per-Invocation Isolation](../identity/principal-and-isolation.md)

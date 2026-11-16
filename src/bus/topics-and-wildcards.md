@@ -48,22 +48,11 @@ Topics must have no empty segments: no leading dot, trailing dot, or consecutive
 `has_valid_segments` check in
 `core/crates/astrid-capsule/src/topic.rs` enforces this at the capsule boundary.
 
-## MAX\_TOPIC\_DEPTH
+## Topic limits and IPC permission matching
 
-All topic matching enforces a hard cap of **20 dot-separated segments**. A topic that splits into
-more than 20 segments is rejected as if it matched nothing. The constant is defined in two places:
+Guest publication rejects topic text longer than **256 bytes**, more than **eight dot-separated segments**, or empty segments. These checks occur in `astrid-capsule/src/engine/wasm/host/ipc.rs` before publication. The event routing matcher's separate 20-segment bound does not increase what a guest may publish.
 
-```rust
-// core/crates/astrid-events/src/route/matcher.rs:20
-pub const MAX_TOPIC_DEPTH: usize = 20;
-
-// core/crates/astrid-events/src/bus.rs (EventReceiver)
-const MAX_TOPIC_DEPTH: usize = 20;
-```
-
-Both the broadcast path (`EventReceiver`) and the routed path (`TopicMatcher`) apply this check
-independently. A capsule publishing a topic deeper than 20 segments will not reach any subscriber
-regardless of its pattern.
+Guest publish and subscribe permission checks use the event route matcher. A trailing `.*` matches descendants at variable depth: `a.b.*` covers `a.b.c` and `a.b.c.d`, not `a.b` itself. An empty publish allowlist denies publication. Do not use the interceptor matcher's exact-depth semantics to interpret these IPC ACL checks.
 
 ## Two Distinct Wildcard Systems
 
