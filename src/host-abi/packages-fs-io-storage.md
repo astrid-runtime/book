@@ -117,11 +117,11 @@ The `File` struct wraps the `file-handle` resource, but calling `File::open` cur
 
 ### VFS layer internals
 
-The host VFS is implemented in `core/crates/astrid-vfs/`. Four types are in play:
+The host-backed compatibility implementations live in `crates/astrid-vfs/`. The canonical native workspace instead uses `WorkspaceBranchService` and `AstridStorageVfs`; see [Workspace Copy-on-Write](../storage/vfs-overlay.md). The compatibility types include:
 
 - `HostVfs` (`src/host.rs`): `cap-std`-backed implementation. Uses a `Semaphore::new(64)` to bound concurrent open file descriptors. The `read` method has its own 50 MB ceiling (`host.rs:298-313`), which is higher than the 10 MB WIT contract limit; the host-function layer enforces the tighter bound. A git-managed workspace gets a direct `HostVfs`, no copy-on-write.
-- `workspace_cow` (`src/workspace_cow/`): OS-level copy-on-write for non-git workspaces (APFS `clonefile`, Linux `overlayfs`/`fuse-overlayfs`, direct-write `NoCow` (without rollback)). The merged directory is shared by the fs host and spawned processes; promote/rollback are audited kernel admin requests. See [Workspace Copy-on-Write](../storage/vfs-overlay.md).
-- `OverlayVfs` (`src/overlay.rs`): In-process copy-on-write layer, no longer in the workspace write path. Reads fall through to the lower layer; writes go to the upper (tempdir) layer. Its `commit`/`rollback` exist and are tested but have no production call site; the workspace durable-write gate is `workspace_cow` promote/rollback.
+- `workspace_cow` (`src/workspace_cow/`): OS-level copy-on-write for non-git workspaces (APFS `clonefile`, Linux `overlayfs`/`fuse-overlayfs`, direct-write `NoCow` (without rollback)). For an isolated backend, the merged directory is shared by the fs host and spawned processes. `NoCow` writes directly and returns `Unsupported` for both promote and rollback; callers requiring isolation must reject it. See [Workspace Copy-on-Write](../storage/vfs-overlay.md).
+- `OverlayVfs` (`src/overlay.rs`): In-process copy-on-write layer, no longer in the workspace write path. Reads fall through to the lower layer; writes go to the upper (tempdir) layer. Its `commit`/`rollback` methods do not define the canonical native workspace transaction boundary.
 - `OverlayVfsRegistry` (`src/overlay_registry.rs`): Per-principal registry. Default cap: 1024 principals (configurable via `ASTRID_OVERLAY_REGISTRY_MAX_PRINCIPALS`). LRU eviction with a 10-minute idle window. The upper-layer `TempDir` is owned by the `OverlayVfs` so eviction cannot delete it while an in-flight invocation holds an `Arc` clone.
 
 The `IgnoreBoundary` (`src/boundary.rs`) enforces `.astridignore` rules using the `ignore` crate's gitignore matching, preventing capsules from reading or writing protected host files (e.g. `.env`).
